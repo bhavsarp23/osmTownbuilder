@@ -42,7 +42,7 @@ class ShapelyMap:
         area.addTags(tags)
         self.Map.addArea(area)
 
-    def exportToXml(self):
-        self.Map.exportToXml()
+    def exportToXml(self, filename='output.osm'):
+        self.Map.exportToXml(filename)
 
 

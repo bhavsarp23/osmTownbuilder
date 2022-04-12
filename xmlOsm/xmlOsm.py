@@ -4,7 +4,7 @@ from lxml import etree as et
 import time
 
 
-METER_CONV = 111000
+METER_CONV = 111139
 
 class OsmMap:
     nodeList = []
@@ -28,6 +28,10 @@ class OsmMap:
         self.nodeList[-1].set('visible',node.visible)
         self.nodeList[-1].set('lat',node.lat)
         self.nodeList[-1].set('lon',node.lon)
+        # for tag in node.tagList:
+        #     self.tagList.append(et.SubElement(self.nodeList[-1],'tag'))
+        #     self.tagList[-1].set('k',tag.k)
+        #     self.tagList[-1].set('v',tag.v)
 
     def removeLastNode(self):
         self.nodeList.pop()
@@ -72,7 +76,8 @@ class OsmMap:
             self.tagList.append(et.SubElement(self.wayList[-1],'tag'))
             self.tagList[-1].set('k',tag.k)
             self.tagList[-1].set('v',tag.v)
-
+#
+# Node(lat, lon)
 class Node:
     id = '0'
     action = 'modify'
@@ -95,6 +100,9 @@ class Node:
     def coordinates(self, lat, lon):
         self.lat = str(lat/METER_CONV)
         self.lon = str(lon/METER_CONV)
+
+    def addTags (self,tags):
+        self.tagList.append(tags)
 
 class Way:
     id = 0
@@ -152,6 +160,118 @@ class Relation:
 
 class xmlObject:
     a = 0
+
+def parseOsm (osmFile):
+    tree = et.parse(osmFile)
+
+    root = tree.getroot()
+
+    map = OsmMap()
+
+    # Get all nodes in osm
+    for item in root.findall('node'):
+        id = item.get('id')
+        tags = []
+        lat = float(item.get('lat'))
+        lon = float(item.get('lon'))
+        node = Node(lat, lon)
+        # Find tags
+        for element in item.findall('tag'):
+            k = (element.get('k'))
+            v = (element.get('v'))
+            tags.append(Tag(k,v))
+        print(tags)
+        node.id = id
+        # node.addTags(tags)
+        map.addNode(node)
+
+    # Get ways
+    for item in root.findall('way'):
+        id = item.get('id')
+        tags = []
+        nodes = []
+        for element in item.findall('tag'):
+            k = (element.get('k'))
+            v = (element.get('v'))
+            tags.append(Tag(k,v))
+
+        for element in item.findall('nd'):
+            nodeRef = (element.get('ref'))
+            # Look for the nodes by reference in nodeList
+            # Duplicate them for the way
+            for node in map.nodeList:
+                if node.get('id') == nodeRef:
+                    print(float(node.get('lat'))*METER_CONV, node.get('lon'))
+            
+            nodes.append(node)
+        # way = Way()
+        # map.addWay(item)
+    return map
+
+def checkForResidentialHighway (way):
+    for element in way.findall('tag'):
+        if ((element.get('k') == 'highway') & (element.get('v') == 'residential')):
+            return True
+        else:
+            return False
+
+def checkForConstructionHighway (way):
+    for element in way.findall('tag'):
+        if ((element.get('k') == 'highway') & (element.get('v') == 'construction')):
+            return True
+        else:
+            return False
+
+def getNodesByRef (osmRoot, refs):
+    nodes = []
+    for ref in refs:
+        for item in osmRoot.findall('node'):
+            if item.get('id') == ref:
+                lat = float(item.get('lat'))*METER_CONV*METER_CONV
+                lon = float(item.get('lon'))*METER_CONV*METER_CONV
+                nodes.append(Node(lat,lon))
+    return nodes
+
+
+def getResidentialStreets ():
+    osmFile = 'output.osm'
+
+    tree = et.parse(osmFile)
+
+    osmRoot = tree.getroot()
+
+    ways = []
+    # Find all ways
+    for item in osmRoot.findall('way'):
+        nodeIds = []
+        # Find ways with the tag highway=residential
+        if checkForResidentialHighway(item) == True:
+            # Add get all nodes in the way
+            for element in item.findall('nd'):
+                nodeIds.append(element.get('ref'))
+            # Make a lineString based on the nodes
+            ways.append(getNodesByRef(osmRoot, nodeIds))
+    return (ways)
+
+def getConstructionStreets ():
+    osmFile = 'output.osm'
+
+    tree = et.parse(osmFile)
+
+    osmRoot = tree.getroot()
+
+    ways = []
+    # Find all ways
+    for item in osmRoot.findall('way'):
+        nodeIds = []
+        # Find ways with the tag highway=residential
+        if checkForConstructionHighway(item) == True:
+            # Add get all nodes in the way
+            for element in item.findall('nd'):
+                nodeIds.append(element.get('ref'))
+            # Make a lineString based on the nodes
+            ways.append(getNodesByRef(osmRoot, nodeIds))
+    return (ways)
 
 
 

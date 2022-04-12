@@ -32,6 +32,10 @@ def getInterpolatedPointsByDistance (line, distanceDelta):
     multipoint = unary_union(points)
     return multipoint
 
+def getInterpolatedPointsByNumber (line, numberOfPoints):
+    distanceDelta = line.length / numberOfPoints
+    return getInterpolatedPointsByDistance(line, distanceDelta)
+
 # Returns the third point of an isosceles triangle given a height and two points
 def getNormalOffsetPoint (point1, point2, offset):
     angle = getAngleOfTwoPoints (point1, point2)
