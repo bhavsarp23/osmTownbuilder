@@ -12,10 +12,61 @@ import matplotlib.pyplot as plt
 
 from scipy.spatial import Voronoi
 
+def getRectanglePolygon (width, length, center=Point(0,0), angle=0):
+    point1 = translate(center, -1*width/2, -1*length/2)
+    point2 = translate(center, width/2, -1*length/2)
+    point3 = translate(center, width/2, length/2)
+    point4 = translate(center, -1*width/2, length/2)
+    poly = Polygon([point1, point2, point3, point4])
+    poly = rotate(poly, angle)
+    return poly
+
+
 class Lot:
 
   def __init__ (self, poly):
     self.poly = poly
+
+  def makeRearEnclave(self, w, l):
+    w = w
+
+
+
+
+class Zone:
+
+  def __init__ (self, line, depth):
+    self.depth = depth
+    self.frontBoundary = line
+    self.rearBoundary = line.parallel_offset(depth, 'right')
+    frontPoints = [point for point in self.frontBoundary.coords]
+    rearPoints = [point for point in self.rearBoundary.coords]
+    #rearPoints.reverse()
+    points = frontPoints + rearPoints
+    self.poly = Polygon(points)
+
+  def subdivideEvenly (self, numberOfPoints):
+    # Get mid boundary
+    self.midBoundary = self.frontBoundary.parallel_offset(self.depth/2, 'right')
+
+    # Get interpolated points
+    self.lotPoints = lg.getInterpolatedPointsByNumber(self.midBoundary, numberOfPoints)
+
+    # Voronoi the lots
+    vor = voronoi_diagram(self.lotPoints)
+    self.lots = []
+    for lot in vor:
+      aa = lot.intersection(self.poly)
+      #aa = lot
+      self.lots.append(aa)
+
+      plt.plot(*aa.exterior.xy)
+
+    plt.plot(*self.poly.exterior.xy)
+    plt.show()
+
+
+
 
 
 class Block:
