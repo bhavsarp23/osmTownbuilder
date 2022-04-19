@@ -40,7 +40,7 @@ resPoints = []
 
 # Interpolate all streets
 for resLine in resLines:
-    resPoints.append(lg.getInterpolatedPointsByDistance(resLine,20))
+    resPoints.append(lg.getRandomInterpolationPoints(resLine,0,7,12,))
 
 resPointAngles = []
 
@@ -78,8 +78,24 @@ for i in range(0, len(resPoints)):
         y = resPoints[i][j].y
         points.append(Point(x,y))
         house = House(random.randint(0,0),y,x).poly
+        house = Home(random.uniform(10,15), random.uniform(10,20), sg.Point(y,x))
+        if random.random() > 0.5:
+            house.makeRearEnclave()
+        house = house.poly
         angle = (-1*(resPointAngles[i][j])+90)
         house = af.rotate(house, angle)
+        if (j > 1):
+            print(house.intersects(houses[-1]))
+        if (j > 1) and (house.intersects(houses[-1])):
+            if random.random() > 0.5:
+                # Union
+                house = house.union(houses[-1])
+                houses.pop()
+                print('union')
+            else:
+                # Difference
+                house = house.difference(houses[-1])
+                print('difference')
         if ((j != 0) and (j != len(resPoints[i]))):
             houses.append(house)
 
@@ -95,12 +111,7 @@ a = ShapelyMap ()
 for house in houses:
     if (house.geom_type == 'Polygon'):
         a.addPolygon(house, Tag('building','yes'))
-        print('yes')
-
-for point in points:
-    a.addPoint(point)
-
-
+s
 blocks = xo.getConstructionBlocks ()
 blockRings = []
 
@@ -119,8 +130,8 @@ blockLots = []
 
 for block in blockRings:
     g = bg.Block(block)
-    g.createCourtyard(random.randint(22,24))
-    g.subdivideBlockEvenly(random.randint(21,25))
+    g.createCourtyard(random.randint(10,12))
+    g.subdivideBlockEvenly(random.randint(20,22))
     for lot in g.lots:
         # for lot in block.lots:
         if lot.poly.geom_type == 'Polygon':
