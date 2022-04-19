@@ -3,9 +3,13 @@ from shapely.geometry import LineString
 from shapely.ops import unary_union
 import numpy as np
 import math
+import random
+import matplotlib.pyplot as plt
 
 # Returns a cartesian point based on a polar pair
-def polarToCart (rho, angle):
+def polarToCart (rho, angle, degrees=True):
+    if degrees:
+        angle = angle*math.pi/180
     x = rho * math.cos (angle)
     y = rho * math.sin (angle)
     return Point (x,y)
@@ -32,6 +36,21 @@ def getInterpolatedPointsByDistance (line, distanceDelta):
     multipoint = unary_union(points)
     return multipoint
 
+def getRandomInterpolationPoints (line, numberOfPoints=0,wmin=7,wmax=0):
+    distances = [0]
+    points=[]
+    if numberOfPoints == 0:
+        numberOfPoints = int(line.length/wmax)
+    if wmax == 0:
+        wmax = line.length/numberOfPoints
+    for i in range(1,numberOfPoints):
+        width = random.uniform(wmin, wmax)
+        distance = width + distances[i-1]
+        points.append(line.interpolate(distance))
+        distances.append(distance)
+
+    return points
+
 def getInterpolatedPointsByNumber (line, numberOfPoints):
     distanceDelta = line.length / numberOfPoints
     return getInterpolatedPointsByDistance(line, distanceDelta)
@@ -46,8 +65,9 @@ def getNormalOffsetPoint (point1, point2, offset):
     point3 = Point (point3Base.x + point3Relative.x, point3Base.y + point3Relative.y)
     return point3
 
-
-
+# Returns a point on line given a linear distance
+def getPointByLinearDistance (line, distance):
+    return line.interpolate (distance)
 
 
 
