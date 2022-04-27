@@ -9,16 +9,17 @@ import lineGeo.lineGeo as lg
 #import lineGeo as lg
 import math
 import matplotlib.pyplot as plt
+import random
 
 from scipy.spatial import Voronoi
 
 def getRectanglePolygon (width, length, center=Point(0,0), angle=0):
-    point1 = translate(center, -1*width/2, -1*length/2)
-    point2 = translate(center, width/2, -1*length/2)
-    point3 = translate(center, width/2, length/2)
-    point4 = translate(center, -1*width/2, length/2)
+    point1 = affinity.translate(center, -1*width/2, -1*length/2)
+    point2 = affinity.translate(center, width/2, -1*length/2)
+    point3 = affinity.translate(center, width/2, length/2)
+    point4 = affinity.translate(center, -1*width/2, length/2)
     poly = Polygon([point1, point2, point3, point4])
-    poly = rotate(poly, angle)
+    poly = affinity.rotate(poly, angle)
     return poly
 
 
@@ -93,6 +94,25 @@ class Block:
 
   # def
 
+  def distortCourtyard (self, maxDistortion=0):
+    # Randomly interpolate the inner boundary
+    enclaveCenterPoints = lg.getRandomInterpolationPoints(self.innerBoundary, 20)
+
+    courtyard = Polygon(self.innerBoundary)
+    # Get roughly the preceding of each point
+    for i in range(0, len(enclaveCenterPoints)):
+      p1 = enclaveCenterPoints[i]
+      p2 = enclaveCenterPoints[i-1]
+      angle = (lg.getAngleOfTwoPoints(p1,p2))
+      if random.random() > 0.5:
+        w = random.uniform(3, maxDistortion)
+        l = random.uniform(3, maxDistortion)
+        enclave = getRectanglePolygon(w,l,enclaveCenterPoints[i],angle)
+        # Add each enclave to the inner boundary
+        courtyard = unary_union([courtyard, enclave])
+
+    self.innerBoundary = LinearRing(courtyard.exterior)
+
   def subdivideBlockEvenly (self, numberOfLots):
     if self.courtyardExists == True:
       # Create a lineString between the two boundaries
@@ -111,16 +131,23 @@ class Block:
         bb = aa.difference(Polygon(self.innerBoundary))
         self.lots.append(Lot(bb))
 
-      # for lot in self.lots:
-      #   plt.plot(*lot.poly.exterior.xy)
-
-
-      # plt.plot(*self.outerBoundary.xy)
-      # plt.plot(*self.innerBoundary.xy)
-      # for point in self.lotPoints:
-      #   plt.scatter(*point.xy)
-      # plt.show()
-
+  def subdivideBlockRandomly (self, numberOfLots):
+    if self.courtyardExists == True:
+      # Create a lineString between the two boundaries
+      if self.direction == 'right':
+        self.midBoundary = self.outerBoundary.parallel_offset (self.depth/2, 'right')
+      if self.direction == 'left':
+        self.midBoundary = self.outerBoundary.parallel_offset (self.depth/2, 'left')
+      # Interpolate that boundary
+      self.lotPoints = MultiPoint(lg.getRandomInterpolationPoints (self.midBoundary, numberOfLots))
+      # Multipolygon of inner and outer boundaries
+      # Voronoi the multipolygon
+      vor = voronoi_diagram (self.lotPoints, envelope=Polygon(self.outerBoundary))
+      self.lots = []
+      for lot in vor:
+        aa = lot.intersection (Polygon(self.outerBoundary))
+        bb = aa.difference(Polygon(self.innerBoundary))
+        self.lots.append(Lot(bb))
 
   def subdivideIntoGrid (self, gridDistance=1):
     if self.courtyardExists == False:
