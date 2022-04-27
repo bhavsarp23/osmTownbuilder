@@ -2,6 +2,7 @@ from shapely.geometry import *
 from shapely.ops import unary_union
 from shapely.affinity import rotate
 from shapely.affinity import translate
+import lineGeo.lineGeo as lg
 from math import cos, sin, pi, radians
 import matplotlib.pyplot as plt
 import random
@@ -32,11 +33,19 @@ def getRectanglePolygon (width, length, center=Point(0,0), angle=0):
     point3 = translate(center, width/2, length/2)
     point4 = translate(center, -1*width/2, length/2)
     poly = Polygon([point1, point2, point3, point4])
-    poly = rotate(poly, angle)
+    poly = rotate(poly, angle, center)
     return poly
 
-# Subtractive house
-class Home:
+def getRectanglePolygon2 (width, length, x, y, angle=0):
+    point1 = Point(x-width/2, y)
+    point2 = Point(x+width/2, y)
+    point3 = Point(x+width/2, y+length)
+    point4 = Point(x-width/2, y+length)
+    poly = Polygon([point1, point2, point3, point4])
+    poly = rotate(poly, angle, Point(x,y))
+    return poly
+
+class Home2:
     poly = 0
     lotPoly = 0
 
@@ -45,12 +54,13 @@ class Home:
         self.width = width
         self.center = center
         self.length = length
-        self.poly = getRectanglePolygon (width, length, center, angle)
+        self.poly = getRectanglePolygon2 (width, length, center.x, center.y, angle)
         self.lotPoly = self.poly
 
     def rotate(self, angle, origin='centroid'):
         self.poly = rotate(self.poly, angle, origin)
         self.lotPoly = rotate(self.lotPoly, angle, origin)
+        self.angle += angle
 
     def translate(self, dx, dy):
         self.poly = translate(self.poly, dx, dy)
@@ -92,6 +102,98 @@ class Home:
         enclave = rotate(enclave, self.angle)
 
         self.poly = self.poly.difference(enclave)
+
+    def translatePolar(self, dr, dangle):
+        # Translate along its angle
+        dr = dr
+
+
+
+    def setback (self, distance=10):
+        # Get length of lot
+        l = self.length/2
+        # Translate distance
+        r = l+distance
+        # Get cartesian translation based on angle
+        d = lg.polarToCart(r, self.angle)
+        # Translate
+        self.translate(d.y, d.x)
+
+# Subtractive house
+class Home:
+    poly = 0
+    lotPoly = 0
+
+    def __init__ (self, width, length, center=Point(0,0), angle=0):
+        self.angle = angle
+        self.width = width
+        self.center = center
+        #self.center = translate(center, length/2, width/2)
+        self.length = length
+        self.poly = getRectanglePolygon (width, length, self.center, angle)
+        self.lotPoly = self.poly
+
+    def rotate(self, angle, origin='centroid'):
+        self.poly = rotate(self.poly, angle, origin)
+        self.lotPoly = rotate(self.lotPoly, angle, origin)
+        self.angle += angle
+
+    def translate(self, dx, dy):
+        self.poly = translate(self.poly, dx, dy)
+        self.lotPoly = translate(self.lotPoly, dx, dy)
+        self.center = translate(self.center, dx, dy)
+
+    def makeRearEnclave (self, width=0, length=0):
+        if int(width) == 0:
+            width = random.uniform(0, self.width)
+
+        if int(length) == 0:
+            length = random.uniform(0, self.length)
+
+        # Get point on back of home
+        backOfHome = LineString ([self.lotPoly.exterior.coords[2], self.lotPoly.exterior.coords[3]])
+
+        distance = random.uniform(0,self.width)
+        enclaveCenter = backOfHome.interpolate(distance)
+
+        enclave = getRectanglePolygon(width, length, enclaveCenter)
+        enclave = rotate(enclave, self.angle)
+
+        self.poly = self.poly.difference(enclave)
+
+    def makeFrontEnclave (self, width=0, length=0):
+        if int(width) == 0:
+            width = random.uniform(0, self.width)
+
+        if int(length) == 0:
+            length = random.uniform(0, self.length)
+
+        # Get point on back of home
+        backOfHome = LineString ([self.lotPoly.exterior.coords[0], self.lotPoly.exterior.coords[1]])
+
+        distance = random.uniform(0,self.width)
+        enclaveCenter = backOfHome.interpolate(distance)
+
+        enclave = getRectanglePolygon(width, length, enclaveCenter)
+        enclave = rotate(enclave, self.angle)
+
+        self.poly = self.poly.difference(enclave)
+
+    def translatePolar(self, dr, dangle):
+        # Translate along its angle
+        dr = dr
+
+
+
+    def setback (self, distance=10):
+        # Get length of lot
+        l = self.length/2
+        # Translate distance
+        r = l+distance
+        # Get cartesian translation based on angle
+        d = lg.polarToCart(r, self.angle)
+        # Translate
+        self.translate(d.y, d.x)
 
 class House:
 
