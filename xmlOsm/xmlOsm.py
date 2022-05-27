@@ -222,6 +222,13 @@ def checkForConstructionHighway (way):
         else:
             return False
 
+def checkForConstructionLanduse (way):
+    for element in way.findall('tag'):
+        if ((element.get('k') == 'landuse') & (element.get('v') == 'construction')):
+            return True
+        else:
+            return False
+
 def getNodesByRef (osmRoot, refs):
     nodes = []
     for ref in refs:
@@ -273,5 +280,24 @@ def getConstructionStreets ():
             ways.append(getNodesByRef(osmRoot, nodeIds))
     return (ways)
 
+def getConstructionBlocks ():
+    osmFile = 'output.osm'
+
+    tree = et.parse(osmFile)
+
+    osmRoot = tree.getroot()
+
+    ways = []
+    # Find all ways
+    for item in osmRoot.findall('way'):
+        nodeIds = []
+        # Find ways with the tag highway=residential
+        if checkForConstructionLanduse(item) == True:
+            # Add get all nodes in the way
+            for element in item.findall('nd'):
+                nodeIds.append(element.get('ref'))
+            # Make a lineString based on the nodes
+            ways.append(getNodesByRef(osmRoot, nodeIds))
+    return (ways)
 
 

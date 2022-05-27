@@ -1,0 +1,113 @@
+category ,amenity,point,way,area,relation,weight
+Sustenance ,bar,1,0,1,0,0.02
+Sustenance ,biergarten,1,0,1,0,0.01
+Sustenance ,cafe,1,0,1,0,0.1
+Sustenance ,fast_food,1,0,1,0,0.1
+Sustenance ,food_court,1,0,1,0,0.1
+Sustenance ,ice_cream,1,0,1,0,0.1
+Sustenance ,pub,1,0,1,0,0.1
+Sustenance ,restaurant,1,0,1,0,0.2
+Education ,college,1,0,1,0,0.2
+Education ,driving_school,1,0,1,0,0.01
+Education ,kindergarten,1,0,1,0,0.1
+Education ,language_school,1,0,1,0,0.01
+Education ,library,1,0,1,0,0.2
+Education ,toy_library,1,0,1,0,0.01
+Education ,music_school,1,0,1,0,0.01
+Education ,school,1,0,1,0,0.2
+Education ,university,1,0,1,0,0.2
+Transportation ,bicycle_parking,1,0,1,0,0.1
+Transportation ,bicycle_repair_station,1,0,1,0,0.01
+Transportation ,bicycle_rental,1,0,1,0,0.1
+Transportation ,boat_rental,1,0,1,0,0.01
+Transportation ,boat_sharing,1,0,1,0,0.01
+Transportation ,bus_station,1,0,1,0,0.01
+Transportation ,car_rental,1,0,1,0,0.01
+Transportation ,car_sharing,1,0,1,0,0.01
+Transportation ,car_wash,1,0,1,0,0.01
+Transportation ,vehicle_inspection,1,0,1,0,0.01
+Transportation ,charging_station,1,0,0,0,0.01
+Transportation ,ferry_terminal,1,0,1,0,0.01
+Transportation ,fuel,1,0,1,0,0.1
+Transportation ,grit_bin,1,0,0,0,0.01
+Transportation ,motorcycle_parking,1,0,1,0,0.01
+Transportation ,parking,1,0,1,0,0.2
+Transportation ,parking_entrance,1,0,0,0,0.01
+Transportation ,parking_space,1,0,1,0,0.1
+Transportation ,taxi,1,0,1,0,0.01
+Financial ,atm,1,0,0,0,0.01
+Financial ,bank,1,0,1,0,0.1
+Financial ,bureau_de_change,1,0,0,0,0.01
+Healthcare ,baby_hatch,1,0,1,0,0.01
+Healthcare ,clinic,1,0,1,0,0.1
+Healthcare ,dentist,1,0,1,0,0.1
+Healthcare ,doctors,1,0,1,0,0.1
+Healthcare ,hospital,1,0,1,0,0.1
+Healthcare ,nursing_home,1,0,1,0,0.02
+Healthcare ,pharmacy,1,0,1,0,0.1
+Healthcare ,social_facility,1,0,1,0,0.1
+Healthcare ,veterinary,1,0,1,0,0.1
+Entertainment-Arts-Culture ,arts_centre,1,0,1,0,0.1
+Entertainment-Arts-Culture ,brothel,1,0,1,0,0.01
+Entertainment-Arts-Culture ,casino,1,0,1,0,0.01
+Entertainment-Arts-Culture ,cinema,1,0,1,0,0.1
+Entertainment-Arts-Culture ,community_centre,1,0,1,0,0.1
+Entertainment-Arts-Culture ,conference_centre,1,0,1,0,0.01
+Entertainment-Arts-Culture ,events_venue,1,0,1,0,0.1
+Entertainment-Arts-Culture ,fountain,1,0,1,0,0.1
+Entertainment-Arts-Culture ,gambling,1,0,1,0,0.01
+Entertainment-Arts-Culture ,love_hotel,1,0,1,0,0.01
+Entertainment-Arts-Culture ,nightclub,1,0,1,0,0.02
+Entertainment-Arts-Culture ,planetarium,1,0,1,0,0.02
+Entertainment-Arts-Culture ,public_bookcase,1,0,1,0,0.1
+Entertainment-Arts-Culture ,social_centre,1,0,1,0,0.1
+Entertainment-Arts-Culture ,stripclub,1,0,0,0,0.01
+Entertainment-Arts-Culture ,studio,1,0,1,0,0.01
+Entertainment-Arts-Culture ,swingerclub,1,0,1,0,0.01
+Entertainment-Arts-Culture ,theatre,1,0,1,0,0.1
+Public Service ,courthouse,1,0,1,0,0.1
+Public Service ,embassy,1,0,1,0,0.01
+Public Service ,fire_station,1,0,1,0,0.2
+Public Service ,police,1,0,1,0,0.2
+Public Service ,post_box,1,0,0,0,0.01
+Public Service ,post_depot,1,0,1,0,0.01
+Public Service ,post_office,1,0,1,0,0.1
+Public Service ,prison,1,0,1,0,0.01
+Public Service ,ranger_station,1,0,1,0,0.01
+Public Service ,townhall,1,0,1,0,0.1
+Facilities ,bbq,1,0,0,0,0.01
+Facilities ,bench,1,0,0,0,0.1
+Facilities ,dog_toilet,1,0,1,0,0.01
+Facilities ,drinking_water,1,0,0,0,0.01
+Facilities ,give_box,1,0,1,0,0.01
+Facilities ,shelter,1,0,1,0,0.1
+Facilities ,shower,1,0,1,0,0.01
+Facilities ,telephone,1,0,0,0,0.01
+Facilities ,toilets,1,0,1,0,0.1
+Facilities ,water_point,1,0,0,0,0.01
+Facilities ,watering_place,1,0,0,0,0.1
+Waste Management ,sanitary_dump_station,1,0,1,0,0.1
+Waste Management ,recycling,1,0,1,0,0.1
+Waste Management ,waste_basket,1,0,0,0,0.1
+Waste Management ,waste_disposal,1,0,0,0,0.1
+Waste Management ,waste_transfer_station,1,0,1,0,0.1
+Others ,animal_boarding,1,0,1,0,0.01
+Others ,animal_breeding,1,0,1,1,0.01
+Others ,animal_shelter,1,0,1,0,0.02
+Others ,baking_oven,1,0,0,0,0.01
+Others ,childcare,1,0,1,0,0.2
+Others ,clock,1,0,1,0,0.1
+Others ,crematorium,1,0,1,0,0.1
+Others ,dive_centre ,1,0,1,0,0.01
+Others ,funeral_hall,1,0,1,0,0.02
+Others ,grave_yard,1,0,1,0,0.02
+Others ,internet_cafe,1,0,1,0,0.02
+Others ,kitchen,1,0,1,0,0.02
+Others ,marketplace,0,1,1,0,0.1
+Others ,monastery,1,0,1,0,0.02
+Others ,photo_booth,1,0,0,0,0.01
+Others ,place_of_mourning,1,0,1,0,0.02
+Others ,place_of_worship,1,0,1,0,0.2
+Others ,public_bath,1,0,1,0,0.2
+Others ,refugee_site,1,0,1,0,0.01
+Others ,vending_machine,1,0,0,0,0.01

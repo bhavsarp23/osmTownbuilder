@@ -15,7 +15,7 @@ import shapely.ops as ops
 import math
 
 
-SETBACK = 10
+SETBACK = 1
 
 streets = xo.getConstructionStreets()
 streetLines = []
@@ -40,14 +40,17 @@ for street in streetLines:
     #resLinesL = ops.transform(lg.reverse, resLinesL)
 
     # Append multipoints into resLines
-    resLines.append(resLinesR)
     resLines.append(resLinesL)
+    resLines.append(resLinesR)
 
 resPoints = []
 
 # Interpolate all streets
 for resLine in resLines:
-    resPoints.append(lg.getRandomInterpolationPoints(resLine,0,10,100))
+    resPoints.append(lg.getRandomInterpolationPoints(resLine,0,11,11))
+    #resPoint = lg.getInterpolatedPointsByDistance(resLine, 10)
+    #resPoint = ops.transform(lg.reverse, resPoint)
+    #resPoints.append(resPoint)
 
 resPointAngles = []
 
@@ -65,13 +68,13 @@ for multipoint in resPoints:
             angle1 = math.atan2(dy1, dx1)
             angle2 = math.atan2(dy2, dx2)
             angle = ((angle1+angle2)/2)*180/math.pi
-            print(angle)
             #angle = math.atan2(dy1, dx1)*180/math.pi
-            #print(angle)
+            print(angle)
         else:
             angle = 0
         multipointAngles.append(angle)
     resPointAngles.append(multipointAngles)
+
 
 
 
@@ -92,25 +95,24 @@ for i in range(0, len(resPoints)):
         y = resPoints[i][j].y
         points.append(Point(x,y))
         angle = (-1*(resPointAngles[i][j])+90)
-        house = House(random.randint(0,0),y,x).poly
-        house = Home2(random.uniform(10,15), random.uniform(15,25), sg.Point(y,x), angle)
+        #house = House(random.randint(0,0),y,x).poly
+        house = Home2(random.uniform(11,11), random.uniform(15,18), sg.Point(y,x), angle)
         if random.random() > 0.5:
             house.makeRearEnclave()
-        #house.rotate(angle)
+        #house.rotate(angle, sg.Point(y,x))
         #shouse.setback(2)
         house = house.poly
         for h in houses:
             house = house.difference(h)
-        if (j > 1) and (house.intersects(houses[-1])):
+        if (len(houses) > 1) and (j > 1) and (house.intersects(houses[-1])):
             if random.random() > 0.7:
                 # Union
                 house = house.union(houses[-1])
                 houses.pop()
                 #print('union')
-            else:
-                # Difference
-                house = house.difference(houses[-1])
-                #print('difference')
+            # else:
+            #     # Difference
+            #     house = house.difference(houses[-1])
         if ((j != 0) and (j != len(resPoints[i]))):
             houseValid = True
             # Check if the house intersects a street
@@ -122,7 +124,7 @@ for i in range(0, len(resPoints)):
                 houses.append(house)
 
 
-plt.show()
+
 
 #blockLine = sg.LineString([(0,0),(100,0),(100,100),(0,100)])
 #block = bg.Block(blockLine)
@@ -156,11 +158,11 @@ blockLots = []
 
 for block in blockRings:
     g = bg.Block(block)
-    g.createCourtyard(random.randint(22,28))
+    g.createCourtyard(random.randint(18,22))
     g.distortCourtyard(15)
     courtyard = sg.Polygon(g.innerBoundary.coords)
     a.addPolygon(courtyard, Tag('a', 'a'))
-    g.subdivideBlockEvenly(random.randint(50,55))
+    g.subdivideBlockEvenly(random.randint(23,25))
     for lot in g.lots:
         # for lot in block.lots:
         if lot.poly.geom_type == 'Polygon':

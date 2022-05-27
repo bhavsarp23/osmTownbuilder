@@ -29,7 +29,7 @@ class ShapelyMap:
 
     def addLinestring (self, linestring, tags=[]):
         coords = list(linestring.coords)
-        coords = [Node(pair[0],pair[1]) for pair in coords]
+        coords = [Node(pair[1],pair[0]) for pair in coords]
         way = Way(coords)
         way.addTags(tags)
         self.Map.addWay(way)
