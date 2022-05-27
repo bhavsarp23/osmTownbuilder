@@ -15,7 +15,40 @@ import shapely.ops as ops
 import math
 
 
-SETBACK = 1
+SETBACK = 10
+PATH_SETBACK = 7.5
+WIDTH = 11
+DEPTH_L = 15
+DEPTH_U = 18
+
+def addSidewalks ():
+    streets = xo.getConstructionStreets()
+    pathLines = []
+
+    # Turn streets into lineString
+    for street in streets:
+        points = []
+        # Turn nodes into points
+        for node in street:
+            point = Point(float(node.lon), float(node.lat))
+            points.append(point)
+        pathLine = LineString(MultiPoint(points))
+        pathLines.append(pathLine)
+
+    resLines = []
+
+    # Offset all streets on both sides
+    for path in pathLines:
+        resLinesL = (path.parallel_offset(PATH_SETBACK, 'left'))
+        resLinesR = (path.parallel_offset(PATH_SETBACK, 'right'))
+        # Flip the multipoint
+        #resLinesL = ops.transform(lg.reverse, resLinesL)
+
+        # Append multipoints into resLines
+        resLines.append(resLinesR)
+        resLines.append(resLinesL)
+
+    return resLines
 
 streets = xo.getConstructionStreets()
 streetLines = []
@@ -47,7 +80,7 @@ resPoints = []
 
 # Interpolate all streets
 for resLine in resLines:
-    resPoints.append(lg.getRandomInterpolationPoints(resLine,0,11,11))
+    resPoints.append(lg.getRandomInterpolationPoints(resLine,0,WIDTH,WIDTH))
     #resPoint = lg.getInterpolatedPointsByDistance(resLine, 10)
     #resPoint = ops.transform(lg.reverse, resPoint)
     #resPoints.append(resPoint)
@@ -75,15 +108,13 @@ for multipoint in resPoints:
         multipointAngles.append(angle)
     resPointAngles.append(multipointAngles)
 
-
-
-
 houses = []
 points = []
 # for multipoint in resPoints:
-#     for point in multipoint:
-#         house = House(0,point.y, point.x)
-#         houses.append(house)
+
+# Add paths to streetlines
+pathLines = addSidewalks()
+streetLines.extend(pathLines)
 
 # Invert the streetlines
 for i in range (0, len(streetLines)):
@@ -96,7 +127,7 @@ for i in range(0, len(resPoints)):
         points.append(Point(x,y))
         angle = (-1*(resPointAngles[i][j])+90)
         #house = House(random.randint(0,0),y,x).poly
-        house = Home2(random.uniform(11,11), random.uniform(15,18), sg.Point(y,x), angle)
+        house = Home2(random.uniform(WIDTH,WIDTH), random.uniform(DEPTH_L,DEPTH_U), sg.Point(y,x), angle)
         if random.random() > 0.5:
             house.makeRearEnclave()
         #house.rotate(angle, sg.Point(y,x))
@@ -142,6 +173,10 @@ for house in houses:
 
 blocks = xo.getConstructionBlocks ()
 blockRings = []
+
+# tag = Tag('highway', 'path')
+# for line in pathLines:
+#     a.addLinestring(line, tag)
 
 for block in blocks:
     # Turn nodes into linearRing
