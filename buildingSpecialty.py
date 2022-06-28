@@ -13,11 +13,12 @@ from lxml import etree as et
 NAME_LIST_PATH = './names/englishHindiNouns.csv'
 AMENITY_LIST_PATH = './names/amenityList.csv'
 SHOP_LIST_PATH = './names/shopList.csv'
+BUILDING_LIST_PATH = './names/allList.csv'
 
 # Probability weights
 ROAD_SUFFIX_THRSH = 0.25
 COMPOUND_WORD_THRSH = 0.75
-AMENITY_THRSH = 0.1
+AMENITY_THRSH = 0.8
 
 # Road suffixes
 MARG = 'भवन'
@@ -92,6 +93,23 @@ def checkForUnusedBuilding(way):
   # Otherwise, return true
   return True
 
+def getRandomBuildingTag (buildingPath):
+  buildingFrame = listFrame = pd.read_csv(buildingPath)
+  lengthOfFrame = len(buildingFrame)
+  indices = range(0, lengthOfFrame)
+  # Get weights
+  buildingWeights = buildingFrame['weight'].tolist()
+  buildingKeys = buildingFrame['key'].tolist()
+  buildingValues = buildingFrame['value'].tolist()
+
+  # Pick random choice
+  index = rd.choices(indices, weights=buildingWeights, k=1)[0]
+
+  element = et.Element('tag')
+  element.set('k',buildingKeys[index])
+  element.set('v',buildingValues[index])
+  return element
+
 # ------------------- #
 #    Main function    #
 # ------------------- #
@@ -119,9 +137,7 @@ for way in osmRoot.findall('way'):
       nameElement = et.Element('tag')
       nameElement.set('k','name')
       nameElement.set('v',name)
-      amenityElement = et.Element('tag')
-      amenityElement.set('k', SHOP)
-      amenityElement.set('v', amenity)
+      amenityElement = getRandomBuildingTag (BUILDING_LIST_PATH)
       way.append(nameElement)
       way.append(amenityElement)
     else:
@@ -129,6 +145,3 @@ for way in osmRoot.findall('way'):
       tag.set('v', 'residential')
 
 tree.write('z.osm',pretty_print=True)
-
-#print(getStreetName(nameList))
-
